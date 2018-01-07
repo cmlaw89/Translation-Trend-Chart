@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(getArray);
+    
+      function onSuccess(my_array) {        
+        var dataTable = google.visualization.arrayToDataTable(my_array);
+        var options = {smoothLine: true, 
+                       chartArea:{width:'70%',height:'90%'}, 
+                       vAxis: {direction: -1, ticks: [{v:0, f:' '},
+                                                      {v:0.33, f:'A+'},
+                                                      {v:0.67, f:'A '},
+                                                      {v:1, f:'A-'},
+                                                      {v:1.33, f:'B+'},
+                                                      {v:1.6, f:'B '},
+                                                      {v:1.83, f:'B-'},
+                                                      {v:2, f:'C+'},
+                                                      {v:2.4, f:'C '},
+                                                      {v:3, f:'C-'},
+                                                      {v:4.5, f:'F '},]}}
+        var chart = new google.visualization.LineChart(document.getElementById('vis_div'));
+        chart.draw(dataTable, options);
+      }
+      
+      function onFailure(error) {
+        var div = document.getElementById('output');
+        div.innerHTML = "ERROR: " + error.message;
+      }
+      
+      function getArray() {
+        google.script.run.withSuccessHandler(onSuccess).getPivot(getTranslatorType());
+        google.script.run.withFailureHandler(onFailure).getPivot(getTranslatorType());
+      }
+      
+      function getTranslatorType() {
+        var dropdown = document.querySelector("form").select1;
+        var selectedIndex = dropdown.selectedIndex;
+        var selectedValue = dropdown.options[selectedIndex].value;
+        
+        return selectedValue;
+      }
+
+    </script>
+  </head>
+  <body style="font-family: Arial;border: 0 none;">
+    <form name="translator_type">
+    <select name=select1 onchange="getArray()">
+    <option>All</option>
+    <option>In House</option>
+    <option>Freelance</option>
+    <? var labels = getPivot("All")[0] ?>
+    <? for (var i = 1; i < labels.length; i++) { ?>
+      <option><?= labels[i]['label'] ?></option>
+    <? } ?>
+    </select>
+    </form>
+    <div id="output"></div>
+    <div id="vis_div" style="width: 100%; height: 400px;"></div>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
